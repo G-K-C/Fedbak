@@ -2,16 +2,23 @@ package com.questioner.service.impl;
 
 import com.questioner.entity.Account;
 import com.questioner.entity.Question;
+import com.questioner.entity.QuestionType;
+import com.questioner.entity.SimilarQuestion;
 import com.questioner.repository.AccountRepository;
 import com.questioner.repository.QuestionRepository;
+import com.questioner.repository.QuestionTypeRepository;
 import com.questioner.service.abs.QuestionService;
 import com.questioner.util.PageableBuilder;
+import com.questioner.util.SimilarDistance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -19,6 +26,8 @@ public class QuestionServiceImpl implements QuestionService{
 
     @Autowired
     private QuestionRepository questionRepository;
+    @Autowired
+    private QuestionTypeRepository questionTypeRepository;
     @Autowired
     private AccountRepository accountRepository;
 
@@ -190,5 +199,27 @@ public class QuestionServiceImpl implements QuestionService{
     @Override
     public Long getUserQuestionCount(Long userId) {
         return questionRepository.countByPublisherId(userId);
+    }
+
+    @Override
+    public List<SimilarQuestion> getSimilarQuestions(String originquestion, Long questiontype) {
+        List<SimilarQuestion> similarQuestions = new ArrayList<>();
+        for(Question question:questionRepository.getAllQuestionsByQuestionTypeId(questiontype)) {
+            String similartitle = question.getQuestionTitle();
+            String content = question.getQuestionContentTxt();
+            String similaroverview = content.substring(0,content.length()>30?30:content.length());
+            similaroverview = similaroverview+"...";
+            String url = "/questionDetail/"+question.getId();
+            int distance = SimilarDistance.getStringDistance(originquestion.toCharArray(), similartitle.toCharArray());
+            SimilarQuestion similarQuestion = new SimilarQuestion(similartitle,url,similaroverview,distance);
+            similarQuestions.add(similarQuestion);
+        }
+        similarQuestions.sort(new Comparator<SimilarQuestion>() {
+            @Override
+            public int compare(SimilarQuestion o1, SimilarQuestion o2) {
+                return o1.getDistance()-o2.getDistance();
+            }
+        });
+        return similarQuestions;
     }
 }

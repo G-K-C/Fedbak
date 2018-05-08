@@ -64,4 +64,8 @@ public interface QuestionRepository extends CrudRepository<Question,Long>{
     @Query("select q.id from Question q where q.questionType.id = ?1")
     List<Long> getAllQuestionIdByQuestionTypeId(Long typeId);
 
+    @Query("select q from Question q where q.questionType.id = ?1")
+    List<Question> getAllQuestionsByQuestionTypeId(Long typeId);
+
+
 }

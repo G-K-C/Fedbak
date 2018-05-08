@@ -1,5 +1,8 @@
 package com.questioner.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
@@ -7,6 +10,7 @@ import java.util.stream.Collectors;
 import com.google.common.collect.Lists;
 import com.questioner.entity.Account;
 import com.questioner.entity.Question;
+import com.questioner.entity.SimilarQuestion;
 import com.questioner.jwt.JwtUser;
 import com.questioner.service.abs.QuestionService;
 import com.questioner.service.abs.RecommendService;
@@ -58,6 +62,22 @@ public class QuestionController {
         } else {
             return new ResJsonTemplate<>("400", "发布问题失败！");
         }
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @RequestMapping(value="similarquestion",method = RequestMethod.POST)
+    public ResJsonTemplate similarQuestion(@RequestBody Question question){
+        System.out.println(question.getQuestionType().getId());
+        List<SimilarQuestion> result = questionService.getSimilarQuestions(question.getQuestionTitle(),question.getQuestionType().getId());
+        /*List<HashMap> resultlist = new ArrayList<>();
+        for(SimilarQuestion similarQuestion:result){
+            HashMap<String,Object> hashMap = new HashMap<>();
+            hashMap.put("questionTitle",similarQuestion.getQuestionTitle());
+            hashMap.put("questionHref",similarQuestion.getQuestionHref());
+            hashMap.put("questionOverview",similarQuestion.getQuestionOverview());
+            resultlist.add(hashMap);
+        }*/
+        return new ResJsonTemplate<>("201",result);
     }
 
     @PreAuthorize("hasRole('USER')")

@@ -3,6 +3,22 @@
  */
 import fetch from '@/utils/fetch'
 
+export function findSimilarQuestion (questionTitle, questionTypeId, questionContent, questionContentTxt) {
+  const data = {
+    questionTitle: questionTitle,
+    questionContent: questionContent,
+    questionContentTxt: questionContentTxt,
+    questionType: {
+      id: questionTypeId
+    }
+  }
+  return fetch({
+    url: '/question/similarquestion',
+    method: 'post',
+    data
+  })
+}
+
 export function raiseQuestion (questionTitle, questionTypeId, questionContent, questionContentTxt) {
   const data = {
     questionTitle: questionTitle,
