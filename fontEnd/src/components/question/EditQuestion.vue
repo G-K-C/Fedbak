@@ -30,7 +30,7 @@
       <el-dialog title="类似问题   这些问题是否是您想要的结果？" :visible.sync="dialogVisible">
         <ul>
           <li v-for="question in similarQuestions">
-            <el-container style="margin-right: 50px">
+            <el-container style="margin-right: 50px;background-color: rgb(240,240,240)">
               <el-header>
                 <h3>
                   <a v-bind:href="question.questionHref" target="_blank">{{ question.questionTitle }}</a>
