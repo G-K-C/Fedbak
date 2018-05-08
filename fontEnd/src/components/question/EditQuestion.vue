@@ -26,28 +26,30 @@
           </div>
         </el-form-item>
       </el-form>
-      <el-button :disabled="isSendingRequest" style="float: right; margin-bottom: 10px"  size="small" type="success"  @click="showSimilarQuestion('questionForm')">发布问题</el-button>
+      <el-button style="float: right; margin-bottom: 10px"  size="small" type="success"  @click="showSimilarQuestion('questionForm')">发布问题</el-button>
       <el-dialog title="类似问题   这些问题是否是您想要的结果？" :visible.sync="dialogVisible">
         <ul>
           <li v-for="question in similarQuestions">
-            <el-container style="margin-right: 50px;background-color: rgb(240,240,240)">
-              <el-header>
-                <h3>
-                  <a v-bind:href="question.questionHref" target="_blank">{{ question.questionTitle }}</a>
-                </h3>
-              </el-header>
-              <el-footer>
-                <span>
-                {{question.questionOverview}}
-              </span>
-              </el-footer>
-            </el-container>
+            <div class="overview">
+              <el-container style="margin-right: 50px;background-color: rgb(240,240,240)">
+                <el-header>
+                  <h3>
+                    <a v-bind:href="question.questionHref" target="_blank">{{ question.questionTitle }}</a>
+                  </h3>
+                </el-header>
+                <el-footer>
+                  <span>
+                  {{question.questionOverview}}
+                </span>
+                </el-footer>
+              </el-container>
+            </div>
           </li>
         </ul>
 
         <div slot="footer" class="dialog-footer">
           <el-button @click="returnEdit()">返回编辑问题</el-button>
-          <el-button type="primary" @click="dialogVisible = false">仍然发布问题</el-button>
+          <el-button :disabled="isSendingRequest" type="primary" @click="dialogVisible = false">仍然发布问题</el-button>
         </div>
       </el-dialog>
     </div>
@@ -64,6 +66,12 @@
   }
   .editor-container{
     z-index: -999;
+  }
+  .overview{
+    padding: 5px;
+    float: left;
+    width: 70%;
+    border-bottom: solid grey 1px;
   }
 </style>
 <script>
@@ -176,6 +184,7 @@
                 .then((response) => {
                   if (response.status === '201') {
                     _this.similarQuestions = response.result
+                    _this.isSendingRequest = false
                   }
                 }).catch((e) => {
                 Message({
@@ -183,6 +192,7 @@
                   type: 'error',
                   duration: 5 * 1000
                 })
+                _this.isSendingRequest = false
               })
             })
           } else {
@@ -193,7 +203,6 @@
       },
       returnEdit() {
         this.dialogVisible = false
-        this.isSendingRequest = false
       },
       resetFields () {
         let editor = this.$refs.ue
