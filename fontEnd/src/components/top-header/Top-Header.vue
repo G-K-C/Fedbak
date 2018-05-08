@@ -3,7 +3,7 @@
   <el-menu theme="dark" class="el-menu-demo" mode="horizontal">
     <el-menu-item index="0">
       <router-link to="/">
-        <img width="61" height="30" src="./img/logo.png" />
+        <img width="150" height="45" src="./img/logo.png" />
       </router-link>
     </el-menu-item>
     <el-menu-item index="1" >

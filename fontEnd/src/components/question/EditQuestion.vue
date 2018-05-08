@@ -151,14 +151,14 @@
                     _this.$router.push('/')
                   }
                 }).catch((e) => {
-                  Message({
-                    message: '对不起，问题发布失败！',
-                    type: 'error',
-                    duration: 5 * 1000
-                  })
-                  _this.isSendingRequest = false
-                  _this.resetFields()
+                Message({
+                  message: '对不起，问题发布失败！',
+                  type: 'error',
+                  duration: 5 * 1000
                 })
+                _this.isSendingRequest = false
+                _this.resetFields()
+              })
             })
           } else {
             return false
