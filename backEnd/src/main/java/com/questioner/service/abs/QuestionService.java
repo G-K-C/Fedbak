@@ -1,8 +1,12 @@
 package com.questioner.service.abs;
 
 import com.questioner.entity.Question;
+import com.questioner.entity.SimilarQuestion;
 import org.springframework.data.domain.Page;
 import com.questioner.util.NoticeType;
+
+import java.util.HashMap;
+import java.util.List;
 
 public interface QuestionService {
     boolean saveQuestion(Question question);
@@ -23,6 +27,7 @@ public interface QuestionService {
 
     Page<Question> getQuestionTitleLikeByType(Long questionTypeId, String questionTitle,
                                               int pageSize, int currentPage, String sortParam);
+    List<SimilarQuestion> getSimilarQuestions(String originquestion, Long questiontype);
 
     boolean userFollowQuestion(Long questionId, Long userId);
 

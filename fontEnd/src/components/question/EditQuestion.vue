@@ -1,4 +1,4 @@
-<template>
+<template xmlns:v-for="http://www.w3.org/1999/xhtml">
   <div class="components-container">
     <div id="question-panel">
       <el-form :model="questionForm" ref="questionForm" :rules="rules" label-width="80px">
@@ -26,7 +26,30 @@
           </div>
         </el-form-item>
       </el-form>
-      <el-button :disabled="isSendingRequest" style="float: right; margin-bottom: 10px"  size="small" type="success"  @click="submitQuestion('questionForm')">发布问题</el-button>
+      <el-button :disabled="isSendingRequest" style="float: right; margin-bottom: 10px"  size="small" type="success"  @click="showSimilarQuestion('questionForm')">发布问题</el-button>
+      <el-dialog title="类似问题   这些问题是否是您想要的结果？" :visible.sync="dialogVisible">
+        <ul>
+          <li v-for="question in similarQuestions">
+            <el-container style="margin-right: 50px">
+              <el-header>
+                <h3>
+                  <a v-bind:href="question.questionHref" target="_blank">{{ question.questionTitle }}</a>
+                </h3>
+              </el-header>
+              <el-footer>
+                <span>
+                {{question.questionOverview}}
+              </span>
+              </el-footer>
+            </el-container>
+          </li>
+        </ul>
+
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="returnEdit()">返回编辑问题</el-button>
+          <el-button type="primary" @click="dialogVisible = false">仍然发布问题</el-button>
+        </div>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -45,13 +68,18 @@
 </style>
 <script>
   import UE from '../UE.vue'
-  import { raiseQuestion, getQuestionType } from '@/api/question'
+  import { raiseQuestion, getQuestionType, findSimilarQuestion } from '@/api/question'
   import { Message } from 'element-ui'
   import { transformQuestionType2Map } from '@/utils/util'
+  import UploadList from "element-ui/packages/upload/src/upload-list";
   export default {
-    components: {UE},
+    components: {
+      UploadList,
+      UE},
     data () {
       return {
+        similarQuestions:null,
+        dialogVisible:false,
         defaultMsg: '',
         questionTypeArray: [],
         config: {
@@ -74,7 +102,7 @@
       }
     },
     computed: {
-      groupQuestionType () {
+      groupQuestionType() {
         const questionTypeMap = transformQuestionType2Map(this.questionTypeArray)
         let options = []
         for (var key in questionTypeMap) {
@@ -136,6 +164,36 @@
             return false
           }
         })
+      },
+      showSimilarQuestion (formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            let editor = this.$refs.ue.getUEditor()
+            var _this = this
+            this.isSendingRequest = true
+            editor.getKfContent(function (content) {
+              findSimilarQuestion(_this.questionForm.questionTitle, _this.questionForm.questionType, content, editor.getContentTxt())
+                .then((response) => {
+                  if (response.status === '201') {
+                    _this.similarQuestions = response.result
+                  }
+                }).catch((e) => {
+                Message({
+                  message: '对不起，相似问题寻找失败！',
+                  type: 'error',
+                  duration: 5 * 1000
+                })
+              })
+            })
+          } else {
+            return false
+          }
+        })
+        this.dialogVisible = true
+      },
+      returnEdit() {
+        this.dialogVisible = false
+        this.isSendingRequest = false
       },
       resetFields () {
         let editor = this.$refs.ue
