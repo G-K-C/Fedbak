@@ -26,7 +26,26 @@
           </div>
         </el-form-item>
       </el-form>
-      <el-button :disabled="isSendingRequest" style="float: right; margin-bottom: 10px"  size="small" type="success"  @click="submitQuestion('questionForm')">发布问题</el-button>
+      <el-button :disabled="isSendingRequest" style="float: right; margin-bottom: 10px"  size="small" type="success"  @click="showModal('questionForm')">发布问题</el-button>
+    </div>
+    <div class="modal" v-show="show" transition="fade">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <!--头部-->
+
+          <!--内容区域-->
+          <div class="modal-body">
+            <slot name="body">
+              <p class="notice"></p>
+            </slot>
+          </div>
+          <!--尾部,操作按钮-->
+          <div class="modal-footer">
+            <el-button  style="float: right; margin-bottom: 10px"  size="small" type="success"  @click="submitQuestion('questionForm')">仍然发布问题</el-button>
+            <el-button  style="float: right; margin-bottom: 10px"  size="small" type="success"  @click="returnEdit()">返回问题编辑</el-button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -52,6 +71,7 @@
     components: {UE},
     data () {
       return {
+        show:false,
         defaultMsg: '',
         questionTypeArray: [],
         config: {
@@ -70,11 +90,12 @@
             { required: true, message: '请选择问题类型', trigger: 'blur' }
           ]
         },
-        isSendingRequest: false
+        isSendingRequest: false,
+        isQueryingSimilarQuestions: false
       }
     },
     computed: {
-      groupQuestionType () {
+      groupQuestionType() {
         const questionTypeMap = transformQuestionType2Map(this.questionTypeArray)
         let options = []
         for (var key in questionTypeMap) {
@@ -123,19 +144,25 @@
                     _this.$router.push('/')
                   }
                 }).catch((e) => {
-                  Message({
-                    message: '对不起，问题发布失败！',
-                    type: 'error',
-                    duration: 5 * 1000
-                  })
-                  _this.isSendingRequest = false
-                  _this.resetFields()
+                Message({
+                  message: '对不起，问题发布失败！',
+                  type: 'error',
+                  duration: 5 * 1000
                 })
+                _this.isSendingRequest = false
+                _this.resetFields()
+              })
             })
           } else {
             return false
           }
         })
+      },
+      showModal (formName) {
+        this.show = true
+      },
+      returnEdit() {
+        this.show = false
       },
       resetFields () {
         let editor = this.$refs.ue
