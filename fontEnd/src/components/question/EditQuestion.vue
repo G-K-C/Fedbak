@@ -49,7 +49,7 @@
 
         <div slot="footer" class="dialog-footer">
           <el-button @click="returnEdit()">返回编辑问题</el-button>
-          <el-button :disabled="isSendingRequest" type="primary" @click="dialogVisible = false">仍然发布问题</el-button>
+          <el-button :disabled="isSendingRequest" type="primary" @click="submitQuestion('questionForm')">仍然发布问题</el-button>
         </div>
       </el-dialog>
     </div>
