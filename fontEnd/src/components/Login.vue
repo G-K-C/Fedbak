@@ -22,13 +22,18 @@
             <el-button style="width: 100%" type="success" :loading="logining" @click.native.prevent="login" >登录</el-button>
           </el-form-item>
         </el-form>
-        <router-link to="/login?register=true">
+        <router-link to="/login?register=2">
+          <span  style="float: left; margin-top: -20px">
+            <i class="fa fa-address-book-o"></i> 忘记密码?
+          </span>
+        </router-link>
+        <router-link to="/login?register=1">
           <span  style="float: right; margin-top: -20px">
             <i class="fa fa-address-book"></i> 去注册
           </span>
         </router-link>
       </div>
-      <div id="register-form" v-if="register">
+      <div id="register-form" v-else-if="register === 1">
         <!-- 此段必须要引入 -->
         <div id="_umfp" style="display:inline;width:1px;height:1px;overflow:hidden"></div>
         <el-form ref="registerform" :model="registerform" :rules="registerrule">
@@ -39,6 +44,10 @@
           <el-form-item prop="username">
             <el-input icon="fa-user-o" type="text" v-model="registerform.username" autoComplete="false"
                       placeholder="请输入用户名" ></el-input>
+          </el-form-item>
+          <el-form-item prop="mailbox">
+            <el-input icon="fa-envelope-o" type="text" v-model="registerform.mailbox" autoComplete="false"
+                      placeholder="请输入邮箱" ></el-input>
           </el-form-item>
           <el-form-item prop="password">
             <el-input icon="fa-lock" type="text" v-model="registerform.password" autoComplete="false"
@@ -55,7 +64,40 @@
             <el-button style="width: 100%" type="success" :loading="registering" @click.native.prevent="userRegister" >注册</el-button>
           </el-form-item>
         </el-form>
-        <router-link @click="register=false" to="/login">
+        <router-link @click="register=0" to="/login">
+          <span  style="float: right; margin-top: -20px">
+            <i class="fa fa-user-o"></i> 去登录
+          </span>
+        </router-link>
+      </div>
+      <div id="forget-form" v-else-if="register === 2">
+        <el-form ref="forgetform" :model="forgetform" :rules="forgetrule">
+          <el-form-item prop="mailbox">
+            <el-input icon="fa-envelope-o" type="text" v-model="forgetform.mailbox" autoComplete="false"
+                      placeholder="请输入注册邮箱" style="width:250px;float:left">
+            </el-input>
+            <el-button style="width:50px;height:36px;float:right;margin:0;padding:0" type="success" :disabled="disableSend" :loading="sending" @click.native.prevent="sendMail" >{{sendContent}}</el-button>
+          </el-form-item>
+          <el-form-item prop="password">
+            <el-input icon="fa-lock" type="text" v-model="forgetform.password" autoComplete="false"
+                      placeholder="请输入新密码" ></el-input>
+          </el-form-item>
+          <el-form-item prop="passwordAgain">
+            <el-input icon="fa-key" type="password" v-model="forgetform.passwordAgain" autoComplete="false"
+                      placeholder="请再一次输入密码" ></el-input>
+          </el-form-item>
+          <el-form-item prop="verificationCode">
+            <el-input icon="fa-telegram" type="text" v-model="forgetform.verificationCode" autoComplete="false"
+                      placeholder="请输入验证码" ></el-input>
+          </el-form-item>
+          <el-form-item class="verification">
+            <div id="forget_verification_code_id" style="width: 400px"></div>
+          </el-form-item>
+          <el-form-item class="forget-button">
+            <el-button style="width: 100%" type="success" :loading="resetting" @click.native.prevent="resetPassword" >确认重置</el-button>
+          </el-form-item>
+        </el-form>
+        <router-link @click="register=0" to="/login">
           <span  style="float: right; margin-top: -20px">
             <i class="fa fa-user-o"></i> 去登录
           </span>
@@ -84,7 +126,7 @@
 </template>
 <script>
   import '../../static/js/nc'
-  import { validateLoginUsername, register } from '@/api/login'
+  import { validateLoginUsername, register , validateMailbox} from '@/api/login'
   import { Message } from 'element-ui'
   /* eslint-disable new-cap,camelcase,no-undef */
   export default {
@@ -98,6 +140,15 @@
           callback()
         }
       }
+      const validateNewPass2 = (rule, value, callback) => {
+        if (value === '') {
+          callback(new Error('请再次输入密码'))
+        } else if (value !== this.forgetform.password) {
+          callback(new Error('两次输入密码不一致!'))
+        } else {
+          callback()
+        }
+      }
       const validateloginUserName = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('请输入账号!'))
@@ -106,6 +157,21 @@
             if (response.status === '200') {
               if (response.result === false) {
                 callback(new Error('该账号已经存在，请尝试新的账号!'))
+              }
+            }
+            callback()
+          })
+        }
+      }
+      const validatemailbox = (rule, value, callback) => {
+        let mailReg = /^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/;
+        if (!mailReg.test(value)) {
+          callback(new Error('邮箱格式不正确'))
+        } else {
+          validateMailbox(value).then((response) => {
+            if (response.status === '200') {
+              if (response.result === false) {
+                callback(new Error('该邮箱不存在，请确认邮箱是否输入正确!'))
               }
             }
             callback()
@@ -126,10 +192,12 @@
           ]
         },
         logining: false,
-        register: false,
+        register: 0,
+        forget: false,
         registerform: {
           loginUsername: '',
           username: '',
+          mailbox: '',
           password: '',
           passwordAgain: ''
         },
@@ -140,6 +208,9 @@
           username: [
             { required: true, message: '请输入用户名', trigger: 'blur' }
           ],
+          mailbox: [
+            { validator: validatemailbox, trigger: 'blur' }
+          ],
           password: [
             { required: true, message: '请输入密码', trigger: 'blur' }
           ],
@@ -149,7 +220,32 @@
         },
         registering: false,
         registerVerification: false,
-        loginVerification: false
+        loginVerification: false,
+        forgetVerification: false,
+        forgetform: {
+          mailbox: '',
+          password: '',
+          passwordAgain: '',
+          verificationCode: ''
+        },
+        forgetrule: {
+          mailbox: [
+            { validator: validatemailbox, trigger: 'blur' }
+          ],
+          password: [
+            { required: true, message: '请输入新密码', trigger: 'blur' }
+          ],
+          passwordAgain: [
+            { validator: validateNewPass2, trigger: 'blur' }
+          ],
+          verificationCode: [
+            { required: true, message: '请输入验证码', trigger: 'blur' }
+          ]
+        },
+        resetting: false,
+        sending: false,
+        disableSend: false,
+        sendContent: '发送'
       }
     },
     methods: {
@@ -189,7 +285,7 @@
         this.$refs.registerform.validate((valid) => {
           if (valid) {
             _this.registering = true
-            register(_this.registerform.loginUsername, _this.registerform.username, _this.registerform.password).then((response) => {
+            register(_this.registerform.loginUsername, _this.registerform.username, _this.registerform.mailbox, _this.registerform.password).then((response) => {
               if (response.status === '201') {
                 Message({
                   message: '注册成功!',
@@ -216,6 +312,97 @@
           }
         })
       },
+      sendMail (ev) {
+        let _this = this
+        this.$refs.forgetform.validate((valid) => {
+          if (valid) {
+            _this.disableSend = true
+            _this.sending = true
+            send(_this.forgetform.mailbox).then((response) => {
+              if (response.status === '201') {
+                Message({
+                  message: '发送成功!',
+                  type: 'success',
+                  duration: 5000
+                })
+                _this.$refs.forgetform.resetFields()
+              } else {
+                Message({
+                  message: '发送失败，请稍后重试!',
+                  type: 'error',
+                  duration: 1000
+                })
+              }
+              _this.sending = false
+            }).catch((e) => {
+              Message({
+                message: '发送失败，请稍后重试!',
+                type: 'error',
+                duration: 1000
+              })
+              _this.sending = false
+            })
+            let sec =60;
+            for(let  i=0; i<=60; i++){
+              window.setTimeout(function(){
+                if (sec !== 0) {
+                  _this.sendContent =   '(' + sec + ')' ;
+                  sec--;
+                } else {
+                  _this.sendContent = '发送'
+                  _this.disableSend = false
+                }
+              }, i * 1000)
+            }
+          } else{
+            Message({
+              message: '请输入正确邮箱！',
+              type: 'error',
+              duration: 1000
+            })
+          }
+        })
+      },
+      resetPassword (ev) {
+        if (!this.forgetVerification) {
+          Message({
+            message: '请滑动滑块进行验证！',
+            type: 'error',
+            duration: 2000
+          })
+          return
+        }
+        let _this = this
+        this.$refs.forgetform.validate((valid) => {
+          if (valid) {
+            _this.resetting = true
+            reset(_this.forgetform.mailbox, _this.forgetform.password, _this.forgetform.verificationCode).then((response) => {
+              if (response.status === '201') {
+                Message({
+                  message: '重置成功!',
+                  type: 'success',
+                  duration: 5000
+                })
+                _this.$refs.registerform.resetFields()
+              } else {
+                Message({
+                  message: '重置失败，请稍后重试!',
+                  type: 'error',
+                  duration: 1000
+                })
+              }
+              _this.registering = false
+            }).catch((e) => {
+              Message({
+                message: '重置失败，请稍后重试!',
+                type: 'error',
+                duration: 1000
+              })
+              _this.resetting = false
+            })
+          }
+        })
+      },
       resetRegisterForm () {
         const _this = this
         this.$nextTick(function () {
@@ -237,6 +424,18 @@
           })
         })
       },
+      resetForgetForm () {
+        const _this = this
+        this.$nextTick(function () {
+          _this.$refs.forgetform.resetFields()
+          _this.forgetform.password = ''
+          _this.forgetform.passwordAgain = ''
+          _this.forgetform.verificationCode = ''
+          _this.initVerificationCode('forget_verification_code_id', function (data) {
+            _this.forgetVerification = true
+          })
+        })
+      },
       initVerificationCode (id, callback) {
         const nc = new noCaptcha()
         const nc_appkey = 'FFFF0000000001787D7C'  // 应用标识,不可更改
@@ -254,18 +453,22 @@
       }
     },
     mounted: function () {
-      this.register = this.$route.query.register === 'true'
-      if (this.register) {
+      this.register = parseInt(this.$route.query.register)
+      if (this.register === 1) {
         this.resetRegisterForm()
+      } else if (this.register === 2){
+        this.resetForgetForm()
       } else {
         this.resetLoginForm()
       }
     },
     watch: {
       '$route' (to, from) {
-        this.register = this.$route.query.register === 'true'
-        if (this.register) {
+        this.register = parseInt(this.$route.query.register)
+        if (this.register === 1) {
           this.resetRegisterForm()
+        } else if (this.register === 2){
+          this.resetForgetForm()
         } else {
           this.resetLoginForm()
         }
