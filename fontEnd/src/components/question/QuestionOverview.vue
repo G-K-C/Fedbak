@@ -16,6 +16,11 @@
       <div class="types">
         {{ questionOverview.subject }} -> {{ questionOverview.course }}
       </div>
+      <div class="tags" v-for="tag in tags">
+        <router-link :to="{ path : `/questions/searchQuestion/${tag.text}`}">
+          <el-tag style="float:left;margin-right:10px">{{tag.text}}</el-tag>
+        </router-link>
+      </div>
       <div v-if='isAdmin' class="publish-date">
         <el-tooltip v-if='this.itemHoverIndex==1&&this.hasHidden' content="取消屏蔽后用户将能浏览此问题" placement="top">
           <el-button style="margin-right: 8px" :disabled="isSendingHidden"  @click.prevent="unHiddenQuestion()"  size="mini" icon="warning" type="warning">取消屏蔽</el-button>
@@ -100,7 +105,9 @@
   import { Message } from 'element-ui'
   import bus from '../../assets/eventBus.js'
   import { mapGetters } from 'vuex'
+  import ElTag from "../../../node_modules/element-ui/packages/tag/src/tag.vue";
   export default {
+    components: {ElTag},
     props: {
       questionOverview: Object
     },
@@ -112,7 +119,9 @@
         loadingHiddenStatus: false,
         hasFollow: true,
         hasHidden: false,
-        loadingFollowStatus: true
+        loadingFollowStatus: true,
+        tags: [{text: 'Java'},
+                {text: 'Arraylist'}]
       }
     },
     computed: {
