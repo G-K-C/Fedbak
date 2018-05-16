@@ -22,13 +22,46 @@ export function validateLoginUsername (loginUsername) {
   })
 }
 
-export function register (loginUsername, username, password) {
+export function validateMailbox (mailbox) {
+  return fetch({
+    url: '/validateMailbox',
+    method: 'post',
+    data: {
+      mailbox: mailbox
+    }
+  })
+}
+
+export function send (mailbox) {
+  return fetch({
+    url: '/send',
+    method: 'post',
+    data: {
+      mailbox: mailbox
+    }
+  })
+}
+
+export function reset (mailbox, password, verificationCode) {
+  return fetch({
+    url: '/reset',
+    method: 'post',
+    data: {
+      mailbox: mailbox,
+      password: password,
+      verificationCode:verificationCode
+    }
+  })
+}
+
+export function register (loginUsername, username, mailbox, password) {
   return fetch({
     url: '/register',
     method: 'post',
     data: {
       loginUsername: loginUsername,
       username: username,
+      mailbox: mailbox,
       password: password
     }
   })
