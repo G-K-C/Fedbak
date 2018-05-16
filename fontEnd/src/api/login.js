@@ -25,7 +25,7 @@ export function validateLoginUsername (loginUsername) {
 export function validateMailbox (mailbox) {
   return fetch({
     url: '/validateMailbox',
-    method: 'post',
+    method: 'get',
     data: {
       mailbox: mailbox
     }
@@ -45,7 +45,7 @@ export function send (mailbox) {
 export function reset (mailbox, password, verificationCode) {
   return fetch({
     url: '/reset',
-    method: 'post',
+    method: 'put',
     data: {
       mailbox: mailbox,
       password: password,
