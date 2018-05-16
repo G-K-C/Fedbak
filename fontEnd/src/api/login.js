@@ -35,7 +35,7 @@ export function validateMailbox (mailbox) {
 export function send (mailbox) {
   return fetch({
     url: '/send',
-    method: 'post',
+    method: 'put',
     data: {
       mailbox: mailbox
     }
