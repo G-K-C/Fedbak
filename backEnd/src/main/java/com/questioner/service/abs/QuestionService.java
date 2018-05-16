@@ -27,7 +27,9 @@ public interface QuestionService {
 
     Page<Question> getQuestionTitleLikeByType(Long questionTypeId, String questionTitle,
                                               int pageSize, int currentPage, String sortParam);
-    List<SimilarQuestion> getSimilarQuestions(String originquestion, Long questiontype);
+    List<SimilarQuestion> getSimilarQuestionsByDB(String originquestion, Long questiontype, String originquestioncontent);
+
+    List<SimilarQuestion> getSimilarQuestionsBySpider(String originquestion, Long questiontype, String originquestioncontent);
 
     boolean userFollowQuestion(Long questionId, Long userId);
 

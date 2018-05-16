@@ -68,15 +68,16 @@ public class QuestionController {
     @RequestMapping(value="similarquestion",method = RequestMethod.POST)
     public ResJsonTemplate similarQuestion(@RequestBody Question question){
         System.out.println(question.getQuestionType().getId());
-        List<SimilarQuestion> result = questionService.getSimilarQuestions(question.getQuestionTitle(),question.getQuestionType().getId());
-        /*List<HashMap> resultlist = new ArrayList<>();
-        for(SimilarQuestion similarQuestion:result){
-            HashMap<String,Object> hashMap = new HashMap<>();
-            hashMap.put("questionTitle",similarQuestion.getQuestionTitle());
-            hashMap.put("questionHref",similarQuestion.getQuestionHref());
-            hashMap.put("questionOverview",similarQuestion.getQuestionOverview());
-            resultlist.add(hashMap);
-        }*/
+        List<SimilarQuestion> dbresult = questionService.getSimilarQuestionsByDB(question.getQuestionTitle(),question.getQuestionType().getId(),question.getQuestionContentTxt());
+        List<SimilarQuestion> spiderresult = questionService.getSimilarQuestionsBySpider(question.getQuestionTitle(),question.getQuestionType().getId(),question.getQuestionContentTxt());
+        List<SimilarQuestion> result = new ArrayList<>();
+        for(int i = 0; i < spiderresult.size(); i++) {
+            result.add(spiderresult.get(i));
+        }
+        int resultnum = dbresult.size() > 3 ? 3 : dbresult.size();
+        for(int i = 0; i < resultnum; i++) {
+            result.add(dbresult.get(i));
+        }
         return new ResJsonTemplate<>("201",result);
     }
 

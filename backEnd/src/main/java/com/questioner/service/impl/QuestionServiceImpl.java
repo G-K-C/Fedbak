@@ -8,8 +8,7 @@ import com.questioner.repository.AccountRepository;
 import com.questioner.repository.QuestionRepository;
 import com.questioner.repository.QuestionTypeRepository;
 import com.questioner.service.abs.QuestionService;
-import com.questioner.util.PageableBuilder;
-import com.questioner.util.SimilarDistance;
+import com.questioner.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +29,9 @@ public class QuestionServiceImpl implements QuestionService{
     private QuestionTypeRepository questionTypeRepository;
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private XpathCollectorService xpathCollectorService;
 
     @Override
     public boolean saveQuestion(Question question) {
@@ -202,24 +204,73 @@ public class QuestionServiceImpl implements QuestionService{
     }
 
     @Override
-    public List<SimilarQuestion> getSimilarQuestions(String originquestion, Long questiontype) {
+    public List<SimilarQuestion> getSimilarQuestionsByDB(String originquestiontitle, Long questiontype, String originquestioncontent) {
         List<SimilarQuestion> similarQuestions = new ArrayList<>();
+        List<String> frequentWords = AnalyzerUtils.findFrequentWord(originquestioncontent, originquestiontitle);
         for(Question question:questionRepository.getAllQuestionsByQuestionTypeId(questiontype)) {
             String similartitle = question.getQuestionTitle();
-            String content = question.getQuestionContentTxt();
-            String similaroverview = content.substring(0,content.length()>30?30:content.length());
+            String contenttxt = question.getQuestionContentTxt();
+            String similaroverview = contenttxt.substring(0,contenttxt.length()>30?30:contenttxt.length());
             similaroverview = similaroverview+"...";
             String url = "/questionDetail/"+question.getId();
-            int distance = SimilarDistance.getStringDistance(originquestion.toCharArray(), similartitle.toCharArray());
-            SimilarQuestion similarQuestion = new SimilarQuestion(similartitle,url,similaroverview,distance);
+            int kindofkeyword = 0;
+            int numofkeyword = 0;
+            for(String keyword : frequentWords) {
+                if(contenttxt.toLowerCase().contains(keyword.toLowerCase())) {
+                    kindofkeyword++;
+                    numofkeyword = numofkeyword + appearNumber(contenttxt, keyword);
+                }
+            }
+            SimilarQuestion similarQuestion = new SimilarQuestion(similartitle,url,similaroverview,kindofkeyword,numofkeyword);
             similarQuestions.add(similarQuestion);
         }
         similarQuestions.sort(new Comparator<SimilarQuestion>() {
             @Override
             public int compare(SimilarQuestion o1, SimilarQuestion o2) {
-                return o1.getDistance()-o2.getDistance();
+                if(o1.getKindofkeyword()!=o2.getKindofkeyword()){
+                    return o2.getKindofkeyword()-o1.getKindofkeyword();
+                }
+                else {
+                    return o2.getNumofkeyword()-o1.getNumofkeyword();
+                }
+
             }
         });
         return similarQuestions;
+    }
+    @Override
+    public List<SimilarQuestion> getSimilarQuestionsBySpider(String originquestiontitle, Long questiontype, String originquestioncontent) {
+        List<SimilarQuestion> similarQuestions = new ArrayList<>();
+        String url = "https://www.baidu.com/s?wd="+originquestiontitle.replaceAll(" ","");
+        List<String> urls = new ArrayList<String>();
+        urls.add(url);
+
+        xpathCollectorService.crawlSingleData(urls,new String[]{"//*[@id=1]/h3/a[1]/allText()", "//*[@id=1]/h3/a[1]/@href", "//*[@id=1]/div[1]/allText()", "//*[@id=2]/h3/a[1]/allText()", "//*[@id=2]/h3/a[1]/@href", "//*[@id=2]/div[1]/allText()", "//*[@id=3]/h3/a[1]/allText()", "//*[@id=3]/h3/a[1]/@href", "//*[@id=3]/div[1]/allText()"}, Useragnets.getuseragent(), "id");
+        while(!xpathCollectorService.getiscompleted())
+        {
+            try {
+                Thread.sleep(5);
+                System.out.println("here");
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if(!FilePipline.error) {
+            similarQuestions = FilePipline.tempResult.get("id");
+            for(SimilarQuestion similarQuestion:similarQuestions){
+                System.out.println(similarQuestion.getQuestionTitle());
+            }
+        }
+        return similarQuestions;
+
+    }
+    public  int appearNumber(String srcText, String findText) {
+        int count = 0;
+        int index = 0;
+        while ((index = srcText.indexOf(findText, index)) != -1) {
+            index = index + findText.length();
+            count++;
+        }
+        return count;
     }
 }
