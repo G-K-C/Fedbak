@@ -1,5 +1,6 @@
 package com.questioner.service.impl;
 
+import com.huaban.analysis.jieba.SegToken;
 import com.questioner.entity.Account;
 import com.questioner.entity.Question;
 import com.questioner.entity.QuestionType;
@@ -250,15 +251,17 @@ public class QuestionServiceImpl implements QuestionService{
         {
             try {
                 Thread.sleep(5);
-                System.out.println("here");
             }catch (Exception e) {
                 e.printStackTrace();
             }
         }
         if(!FilePipline.error) {
             similarQuestions = FilePipline.tempResult.get("id");
-            for(SimilarQuestion similarQuestion:similarQuestions){
-                System.out.println(similarQuestion.getQuestionTitle());
+            for(int j = 0; j < similarQuestions.size(); j++){
+                System.out.println(similarQuestions.get(j).getQuestionTitle());
+                if(similarQuestions.get(j).getQuestionTitle()==null){
+                    similarQuestions.remove(j);
+                }
             }
         }
         return similarQuestions;
