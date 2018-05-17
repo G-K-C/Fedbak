@@ -255,12 +255,13 @@ public class QuestionServiceImpl implements QuestionService{
                 e.printStackTrace();
             }
         }
+        boolean fail = false;
         if(!FilePipline.error) {
             similarQuestions = FilePipline.tempResult.get("id");
             for(int j = 0; j < similarQuestions.size(); j++){
                 System.out.println(similarQuestions.get(j).getQuestionTitle());
                 if(similarQuestions.get(j).getQuestionTitle()==null){
-                    similarQuestions.remove(j);
+                    fail = true;
                 }
             }
         }
