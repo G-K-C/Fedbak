@@ -16,7 +16,6 @@ public class QuestionOverview {
     private String publisherImgSrc;
     private Long views ;
     private Boolean hidden ;
-    private String tags;
 
 
     public Long getId() {
@@ -113,14 +112,6 @@ public class QuestionOverview {
 
     public void setViews(Long views) {
         this.views = views;
-    }
-
-    public void setTags(String tags) {
-        this.tags = tags;
-    }
-
-    public String getTags() {
-        return tags;
     }
 
     @Override

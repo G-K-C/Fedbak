@@ -38,6 +38,9 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter{
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain)
             throws ServletException, IOException {
         String authHeader = httpServletRequest.getHeader(this.header);
+       // httpServletResponse.setHeader("Access-Control-Allow-Origin",httpServletRequest.getHeader("Origin"));
+      // httpServletResponse.setHeader("Access-Control-Allow-Credentials", "true");
+       //httpServletResponse.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
         if(authHeader != null && authHeader.startsWith(tokenHeader))
         {
             final String autoToken = authHeader.substring(tokenHeader.length());

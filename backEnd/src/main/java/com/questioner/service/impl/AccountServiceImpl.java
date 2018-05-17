@@ -14,7 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import java.util.Collections;
 import java.util.List;
 
@@ -53,6 +55,11 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account getUser(Long userId) {
         return accountRepository.findOne(userId);
+    }
+
+    @Override
+    public Account getUserByEmail(String email) {
+        return accountRepository.findByEmail(email);
     }
 
     @Override
@@ -124,4 +131,11 @@ public class AccountServiceImpl implements AccountService {
     public boolean validateLoginUsername(String loginUsername) {
         return accountRepository.findByLoginUsername(loginUsername) == null;
     }
+
+    @Override
+    public boolean validateEmail(String email){
+        return accountRepository.findByEmail(email) == null;
+    }
+
+
 }

@@ -22,9 +22,6 @@ public class Question {
     private String questionContentTxt; // plain text of the question remove the format
 
     @Column
-    private String tags;
-
-    @Column
     private Date publishDateTime = new Date();
 
     @Column
@@ -154,13 +151,6 @@ public class Question {
         this.publisher = publisher;
     }
 
-    public String getTags() {
-        return tags;
-    }
-
-    public void setTags(String tags) {
-        this.tags = tags;
-    }
     /*
     public List<QuestionNotice> getQuestionNotices() {
         return questionNotices;
