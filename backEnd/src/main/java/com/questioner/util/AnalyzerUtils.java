@@ -11,7 +11,7 @@ public class AnalyzerUtils {
         String r = " ~，[’!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~]+";
         HashMap<String, Integer> frequency = new HashMap<>();
         for(SegToken wordtoken : segmenter.process(content, JiebaSegmenter.SegMode.SEARCH)) {
-            if(!wordtoken.nature.equals("v")&&!wordtoken.nature.equals("r")&&!wordtoken.nature.equals("m")&&!wordtoken.nature.equals("a")&&!wordtoken.nature.equals("p")&&!wordtoken.nature.equals("uj")&&!r.contains(wordtoken.word)){
+            if(!wordtoken.nature.equals("v")&&!wordtoken.nature.equals("r")&&!wordtoken.nature.equals("m")&&!wordtoken.nature.equals("a")&&!wordtoken.nature.equals("p")&&!wordtoken.nature.equals("uj")&&!r.contains(wordtoken.word)&&wordtoken.word!=" "){
                 if(frequency.containsKey(wordtoken.word)) {
                     frequency.put(wordtoken.word, frequency.get(wordtoken.word) + 1);
                 }
