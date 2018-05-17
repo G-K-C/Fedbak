@@ -13,6 +13,8 @@ public interface AccountService {
 
     Account getUser(Long userId);
 
+    Account getUserByEmail(String email);
+
     Long getUserFollowersCount(Long userId);
 
     Long getUserFollowedCount(Long userId);
@@ -28,4 +30,7 @@ public interface AccountService {
     boolean hasFollowUser(Long userId, Long followedUserId);
 
     boolean validateLoginUsername(String loginUsername);
+
+    boolean validateEmail(String Email);
+
 }

@@ -98,7 +98,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
                 .antMatchers("/creditRecord/**").permitAll()
                 .antMatchers("/websocket/**").permitAll()
                 .antMatchers("/ueditor/**").permitAll()
-                .antMatchers("/index","/register").permitAll()
+                .antMatchers("/index","/register","/validateMailbox","/send","/reset").permitAll()
                 .antMatchers("/user/**").permitAll()
                 .anyRequest().authenticated();
         // add JWT filter

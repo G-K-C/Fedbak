@@ -18,7 +18,7 @@
       </div>
       <div class="tags" v-for="tag in tags">
         <router-link :to="{ path : `/questions/searchQuestion/${tag.text}`}">
-          <el-tag style="float:left;margin-right:10px">{{tag}}</el-tag>
+          <el-tag style="float:left;margin-right:10px">{{tag.text}}</el-tag>
         </router-link>
       </div>
       <div v-if='isAdmin' class="publish-date">
@@ -120,16 +120,9 @@
         hasFollow: true,
         hasHidden: false,
         loadingFollowStatus: true,
-        tags: []
+        tags: [{text: 'Java'},
+                {text: 'Arraylist'}]
       }
-    },
-    created () {
-      if(this.questionOverview.tags == '') {
-        this.tags = []
-      }else {
-        this.tags = this.questionOverview.tags.split(',')
-      }
-
     },
     computed: {
       ...mapGetters(['hasLogin', 'user']),

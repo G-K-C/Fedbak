@@ -16,7 +16,6 @@ import com.questioner.service.abs.QuestionService;
 import com.questioner.service.abs.RecommendService;
 import com.questioner.service.abs.QuestionTypeService;
 import com.questioner.service.abs.QuestionNoticeService;
-import com.questioner.util.AnalyzerUtils;
 import com.questioner.util.ResJsonTemplate;
 import com.questioner.viewmodel.QuestionOverview;
 import com.questioner.viewmodel.QuestionOverviewList;
@@ -58,19 +57,6 @@ public class QuestionController {
         Account account = new Account();
         account.setId(userId);
         question.setPublisher(account);
-        List<String> frequentwords = AnalyzerUtils.findFrequentWord(question.getQuestionContentTxt(), question.getQuestionTitle());
-        String tags = "";
-        for(int i = 0; i < frequentwords.size(); i++) {
-            tags = tags + frequentwords.get(i);
-            System.out.println(frequentwords.get(i));
-            if(i == 2) {
-                break;
-            }
-            if(i == 1 && frequentwords.size()!=1) {
-                tags = tags + ",";
-            }
-        }
-        question.setTags(tags);
         if(questionService.saveQuestion(question)){
             return new ResJsonTemplate<>("201","成功发布问题！");
         } else {
@@ -140,7 +126,6 @@ public class QuestionController {
         questionOverview.setPublisherName(question.getPublisher().getUsername());
         questionOverview.setPublisherImgSrc(question.getPublisher().getAvatarURL());
         questionOverview.setViews(question.getViews());
-        questionOverview.setTags(question.getTags());
         return questionOverview;
     }
 

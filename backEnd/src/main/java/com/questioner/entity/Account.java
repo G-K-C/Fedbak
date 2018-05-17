@@ -23,6 +23,12 @@ public class Account {
     private String avatarURL;
     @Column(columnDefinition = "TEXT")
     private String profile;
+    @Column()
+    private String email;
+    @Column(nullable = false)
+    private String resetCode;
+    @Column(nullable = false)
+    private Long resetOuttime;
 
     @Column
     private Long creditPoint = 0L;
@@ -127,6 +133,33 @@ public class Account {
     public void setLoginUsername(String loginUsername) {
         this.loginUsername = loginUsername;
     }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+
+    public String getResetCode() {
+        return resetCode;
+    }
+
+    public void setResetCode(String resetCode) {
+        this.resetCode = resetCode;
+    }
+
+    public Long getResetOuttime() {
+        return resetOuttime;
+    }
+
+    public void setResetOuttime(Long resetOuttime) {
+        this.resetOuttime = resetOuttime;
+    }
+
+
 
     public Long getCreditPoint() {
         return creditPoint;

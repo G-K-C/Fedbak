@@ -8,6 +8,7 @@ import { Message } from 'element-ui'
 
 // 创建axios实例
 const service = axios.create({
+  //baseURL: 'http://111.230.231.91:8080/',
   baseURL: 'http://localhost:8080/',
   validateStatus: function (status) {
     return status < 500

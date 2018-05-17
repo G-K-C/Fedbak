@@ -46,7 +46,7 @@
                       placeholder="请输入用户名" ></el-input>
           </el-form-item>
           <el-form-item prop="mailbox">
-            <el-input icon="fa-envelope-o" type="text" v-model="registerform.mailbox" autoComplete="false"
+            <el-input icon="fa-envelope-o" type="text" v-model="registerform.email" autoComplete="false"
                       placeholder="请输入邮箱" ></el-input>
           </el-form-item>
           <el-form-item prop="password">
@@ -126,7 +126,7 @@
 </template>
 <script>
   import '../../static/js/nc'
-  import { validateLoginUsername, register , validateMailbox} from '@/api/login'
+  import { validateLoginUsername, register , validateMailbox,send,reset} from '@/api/login'
   import { Message } from 'element-ui'
   /* eslint-disable new-cap,camelcase,no-undef */
   export default {
@@ -170,7 +170,7 @@
         } else {
           validateMailbox(value).then((response) => {
             if (response.status === '200') {
-              if (response.result === false) {
+              if (response.result === true) {
                 callback(new Error('该邮箱不存在，请确认邮箱是否输入正确!'))
               }
             }
@@ -197,7 +197,7 @@
         registerform: {
           loginUsername: '',
           username: '',
-          mailbox: '',
+          email: '',
           password: '',
           passwordAgain: ''
         },
@@ -285,7 +285,7 @@
         this.$refs.registerform.validate((valid) => {
           if (valid) {
             _this.registering = true
-            register(_this.registerform.loginUsername, _this.registerform.username, _this.registerform.mailbox, _this.registerform.password).then((response) => {
+            register(_this.registerform.loginUsername, _this.registerform.username, _this.registerform.email, _this.registerform.password).then((response) => {
               if (response.status === '201') {
                 Message({
                   message: '注册成功!',
@@ -315,7 +315,7 @@
       sendMail (ev) {
         let _this = this
         this.$refs.forgetform.validate((valid) => {
-          if (valid) {
+          if (!valid) {
             _this.disableSend = true
             _this.sending = true
             send(_this.forgetform.mailbox).then((response) => {
@@ -392,13 +392,6 @@
                 })
               }
               _this.registering = false
-            }).catch((e) => {
-              Message({
-                message: '重置失败，请稍后重试!',
-                type: 'error',
-                duration: 1000
-              })
-              _this.resetting = false
             })
           }
         })
