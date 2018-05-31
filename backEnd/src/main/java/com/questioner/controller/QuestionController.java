@@ -96,6 +96,21 @@ public class QuestionController {
     }
 
     @PreAuthorize("hasRole('USER')")
+    @RequestMapping(value="fieldaccordtotitle",method = RequestMethod.POST)
+    public ResJsonTemplate fieldaccordquestion(@RequestBody Question question){
+        System.out.println(question.getQuestionType().getId());
+        boolean ifaccord = questionService.ifaccord(question.getQuestionTitle(),question.getQuestionType().getId(),question.getQuestionContentTxt());
+        if(ifaccord) {
+            System.out.println("accord");
+            return new ResJsonTemplate<>("201", "accord");
+        }
+        else {
+            System.out.println("notaccord");
+            return new ResJsonTemplate<>("400", "notaccord");
+        }
+    }
+
+    @PreAuthorize("hasRole('USER')")
     @RequestMapping(value = "modify/{questionId}",method = RequestMethod.PUT)
     public ResJsonTemplate modifyQuestion(@PathVariable("questionId") Long questionId,
                                           @RequestBody Question question){

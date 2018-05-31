@@ -31,6 +31,8 @@ public interface QuestionService {
 
     List<SimilarQuestion> getSimilarQuestionsBySpider(String originquestion, Long questiontype, String originquestioncontent);
 
+    boolean ifaccord(String questiontxt, Long questiontype, String questioncontent);
+
     boolean userFollowQuestion(Long questionId, Long userId);
 
     boolean userUnFollowQuestion(Long questionId, Long userId);

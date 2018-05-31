@@ -19,6 +19,21 @@ export function findSimilarQuestion (questionTitle, questionTypeId, questionCont
   })
 }
 
+export function fieldaccordtotitle (questionTitle, questionTypeId, questionContentTxt) {
+  const data = {
+    questionTitle: questionTitle,
+    questionContentTxt: questionContentTxt,
+    questionType: {
+      id: questionTypeId
+    }
+  }
+  return fetch({
+    url: '/question/fieldaccordtotitle',
+    method: 'post',
+    data
+  })
+}
+
 export function raiseQuestion (questionTitle, questionTypeId, questionContent, questionContentTxt) {
   const data = {
     questionTitle: questionTitle,

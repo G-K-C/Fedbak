@@ -6,7 +6,7 @@
           <el-input v-model="questionForm.questionTitle" placeholder="输入问题标题能使问题更快被解决哦"></el-input>
         </el-form-item>
         <el-form-item prop="questionType" label="问题类型">
-          <el-select v-model="questionForm.questionType" filterable placeholder="请选择">
+          <el-select v-model="questionForm.questionType" filterable placeholder="请选择" @change="selectType('questionForm')">
             <el-option-group
               v-for="group in groupQuestionType"
               :key="group.label"
@@ -76,7 +76,7 @@
 </style>
 <script>
   import UE from '../UE.vue'
-  import { raiseQuestion, getQuestionType, findSimilarQuestion } from '@/api/question'
+  import { raiseQuestion, getQuestionType, findSimilarQuestion,fieldaccordtotitle } from '@/api/question'
   import { Message } from 'element-ui'
   import { transformQuestionType2Map } from '@/utils/util'
   import UploadList from "element-ui/packages/upload/src/upload-list";
@@ -166,6 +166,34 @@
                 })
                 _this.isSendingRequest = false
                 _this.resetFields()
+              })
+            })
+          } else {
+            return false
+          }
+        })
+      },
+      selectType (formName){
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            let editor = this.$refs.ue.getUEditor()
+            var _this = this
+            this.isSendingRequest = true
+            editor.getKfContent(function (content) {
+              fieldaccordtotitle(_this.questionForm.questionTitle, _this.questionForm.questionType, editor.getContentTxt())
+                .then((response) => {
+                  if (response.status === '201') {
+
+                  }
+                  else{
+                    alert("您的问题很有可能不属于本领域")
+                  }
+                }).catch((e) => {
+                Message({
+                  message: '问题是否符合领域失败！',
+                  type: 'error',
+                  duration: 5 * 1000
+                })
               })
             })
           } else {

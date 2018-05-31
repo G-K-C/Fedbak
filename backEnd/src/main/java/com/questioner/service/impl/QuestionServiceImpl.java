@@ -16,16 +16,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class QuestionServiceImpl implements QuestionService{
 
     @Autowired
     private QuestionRepository questionRepository;
+    @Autowired
+    private QuestionTypeRepository questiontypeRepository;
     @Autowired
     private QuestionTypeRepository questionTypeRepository;
     @Autowired
@@ -266,6 +265,29 @@ public class QuestionServiceImpl implements QuestionService{
             }
         }
         return similarQuestions;
+
+    }
+    public boolean ifaccord(String questiontxt, Long questiontype, String questioncontent) {
+        HashMap<Long,List<String>> FieldTag = new HashMap<Long,List<String>>();
+        for(QuestionType questionType:questiontypeRepository.findAll()) {
+            Long typeid = questionType.getId();
+            List<String> tags = new ArrayList<>();
+            for(Question question:questionRepository.getAllQuestionsByQuestionTypeId(typeid)) {
+                if(question.getTags()!=null && !question.getTags().isEmpty()) {
+                    tags.addAll(Arrays.asList(question.getTags().split(",")));
+                }
+            }
+            FieldTag.put(typeid, tags);
+
+        }
+        QuestionModel questionModel = new QuestionModel(FieldTag);
+        Long result = questionModel.JudgeModel(AnalyzerUtils.findFrequentWord(questioncontent, questiontxt), questiontype);
+        if(result == -5){
+            return true;
+        }
+        else {
+            return false;
+        }
 
     }
     public  int appearNumber(String srcText, String findText) {

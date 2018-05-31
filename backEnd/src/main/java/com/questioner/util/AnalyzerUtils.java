@@ -7,6 +7,9 @@ import java.util.*;
 
 public class AnalyzerUtils {
     public static List findFrequentWord(String content, String title) {
+        if(content == null || content.isEmpty()) {
+            content = title;
+        }
         JiebaSegmenter segmenter = new JiebaSegmenter();
         String r = " ~，[’!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~]+";
         HashMap<String, Integer> frequency = new HashMap<>();

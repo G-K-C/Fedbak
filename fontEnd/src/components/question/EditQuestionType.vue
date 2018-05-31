@@ -13,7 +13,7 @@
           </el-select>
         </el-form-item>
         <el-form-item prop="questionType" label="问题类型">
-          <el-select v-model="typeId" placeholder="请选择" style="width: 40%">
+          <el-select v-model="typeId" placeholder="请选择" style="width: 40%" v-on:change="selectType">
             <el-option
               v-for="option in typeOption"
               :key="option.value"
@@ -111,6 +111,9 @@
           }
         }
         this.typeId=''
+      },
+      selectType (){
+        console.log(this.typeId)
       },
       isNewType () {
         for (var i = 0; i < this.groupQuestionType.length; i++) {
