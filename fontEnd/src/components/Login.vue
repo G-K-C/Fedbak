@@ -1,110 +1,110 @@
 <template>
   <div id = "wrap-banner">
-  <div id="loginContainer">
-    <el-card class="box-card">
-      <div slot="header" class="clearfix login-title">
-        <span style="">遇见知识</span>
-      </div>
-      <div id="login-form" v-if="!register">
-        <el-form ref="loginform" :model="loginform" :rules="loginrule">
-          <el-form-item prop="username">
-            <el-input icon="fa-user-circle" type="text" v-model="loginform.username" autoComplete="false"
-                      autofocus placeholder="请输入账号" ></el-input>
-          </el-form-item>
-          <el-form-item prop="password">
-            <el-input type="password" v-model="loginform.password" autoComplete="false"
-                      icon="fa-lock" placeholder="请输入密码"></el-input>
-          </el-form-item>
-          <el-form-item class="verification">
-            <div id="login_verification_code_id" style="width: 400px"></div>
-          </el-form-item>
-          <el-form-item class="login-button">
-            <el-button style="width: 100%" type="success" :loading="logining" @click.native.prevent="login" >登录</el-button>
-          </el-form-item>
-        </el-form>
-        <router-link to="/login?register=2">
+    <div id="loginContainer">
+      <el-card class="box-card">
+        <div slot="header" class="clearfix login-title">
+          <span style="">遇见知识</span>
+        </div>
+        <div id="login-form" v-if="!register">
+          <el-form ref="loginform" :model="loginform" :rules="loginrule">
+            <el-form-item prop="username">
+              <el-input icon="fa-user-circle" type="text" v-model="loginform.username" autoComplete="false"
+                        autofocus placeholder="请输入账号" ></el-input>
+            </el-form-item>
+            <el-form-item prop="password">
+              <el-input type="password" v-model="loginform.password" autoComplete="false"
+                        icon="fa-lock" placeholder="请输入密码"></el-input>
+            </el-form-item>
+            <el-form-item class="verification">
+              <div id="login_verification_code_id" style="width: 400px"></div>
+            </el-form-item>
+            <el-form-item class="login-button">
+              <el-button style="width: 100%" type="success" :loading="logining" @click.native.prevent="login" >登录</el-button>
+            </el-form-item>
+          </el-form>
+          <router-link to="/login?register=2">
           <span  style="float: left; margin-top: -20px">
             <i class="fa fa-address-book-o"></i> 忘记密码?
           </span>
-        </router-link>
-        <router-link to="/login?register=1">
+          </router-link>
+          <router-link to="/login?register=1">
           <span  style="float: right; margin-top: -20px">
             <i class="fa fa-address-book"></i> 去注册
           </span>
-        </router-link>
-      </div>
-      <div id="register-form" v-else-if="register === 1">
-        <!-- 此段必须要引入 -->
-        <div id="_umfp" style="display:inline;width:1px;height:1px;overflow:hidden"></div>
-        <el-form ref="registerform" :model="registerform" :rules="registerrule">
-          <el-form-item prop="loginUsername">
-            <el-input icon="fa-user-circle" type="text" v-model="registerform.loginUsername" autoComplete="false"
-                      autofocus placeholder="请输入账号" ></el-input>
-          </el-form-item>
-          <el-form-item prop="username">
-            <el-input icon="fa-user-o" type="text" v-model="registerform.username" autoComplete="false"
-                      placeholder="请输入用户名" ></el-input>
-          </el-form-item>
-          <el-form-item prop="mailbox">
-            <el-input icon="fa-envelope-o" type="text" v-model="registerform.mailbox" autoComplete="false"
-                      placeholder="请输入邮箱" ></el-input>
-          </el-form-item>
-          <el-form-item prop="password">
-            <el-input icon="fa-lock" type="text" v-model="registerform.password" autoComplete="false"
-                      placeholder="请输入密码" ></el-input>
-          </el-form-item>
-          <el-form-item prop="passwordAgain">
-            <el-input icon="fa-key" type="password" v-model="registerform.passwordAgain" autoComplete="false"
-                       placeholder="请再一次输入密码" ></el-input>
-          </el-form-item>
-          <el-form-item class="verification">
-            <div id="verification_code_id" style="width: 400px"></div>
-          </el-form-item>
-          <el-form-item class="register-button">
-            <el-button style="width: 100%" type="success" :loading="registering" @click.native.prevent="userRegister" >注册</el-button>
-          </el-form-item>
-        </el-form>
-        <router-link @click="register=0" to="/login">
+          </router-link>
+        </div>
+        <div id="register-form" v-else-if="register === 1">
+          <!-- 此段必须要引入 -->
+          <div id="_umfp" style="display:inline;width:1px;height:1px;overflow:hidden"></div>
+          <el-form ref="registerform" :model="registerform" :rules="registerrule">
+            <el-form-item prop="loginUsername">
+              <el-input icon="fa-user-circle" type="text" v-model="registerform.loginUsername" autoComplete="false"
+                        autofocus placeholder="请输入账号" ></el-input>
+            </el-form-item>
+            <el-form-item prop="username">
+              <el-input icon="fa-user-o" type="text" v-model="registerform.username" autoComplete="false"
+                        placeholder="请输入用户名" ></el-input>
+            </el-form-item>
+            <el-form-item prop="mailbox">
+              <el-input icon="fa-envelope-o" type="text" v-model="registerform.email" autoComplete="false"
+                        placeholder="请输入邮箱" ></el-input>
+            </el-form-item>
+            <el-form-item prop="password">
+              <el-input icon="fa-lock" type="password" v-model="registerform.password" autoComplete="false"
+                        placeholder="请输入密码" ></el-input>
+            </el-form-item>
+            <el-form-item prop="passwordAgain">
+              <el-input icon="fa-key" type="password" v-model="registerform.passwordAgain" autoComplete="false"
+                        placeholder="请再一次输入密码" ></el-input>
+            </el-form-item>
+            <el-form-item class="verification">
+              <div id="verification_code_id" style="width: 400px"></div>
+            </el-form-item>
+            <el-form-item class="register-button">
+              <el-button style="width: 100%" type="success" :loading="registering" @click.native.prevent="userRegister" >注册</el-button>
+            </el-form-item>
+          </el-form>
+          <router-link @click="register=0" to="/login">
           <span  style="float: right; margin-top: -20px">
             <i class="fa fa-user-o"></i> 去登录
           </span>
-        </router-link>
-      </div>
-      <div id="forget-form" v-else-if="register === 2">
-        <el-form ref="forgetform" :model="forgetform" :rules="forgetrule">
-          <el-form-item prop="mailbox">
-            <el-input icon="fa-envelope-o" type="text" v-model="forgetform.mailbox" autoComplete="false"
-                      placeholder="请输入注册邮箱" style="width:250px;float:left">
-            </el-input>
-            <el-button style="width:50px;height:36px;float:right;margin:0;padding:0" type="success" :disabled="disableSend" :loading="sending" @click.native.prevent="sendMail" >{{sendContent}}</el-button>
-          </el-form-item>
-          <el-form-item prop="password">
-            <el-input icon="fa-lock" type="text" v-model="forgetform.password" autoComplete="false"
-                      placeholder="请输入新密码" ></el-input>
-          </el-form-item>
-          <el-form-item prop="passwordAgain">
-            <el-input icon="fa-key" type="password" v-model="forgetform.passwordAgain" autoComplete="false"
-                      placeholder="请再一次输入密码" ></el-input>
-          </el-form-item>
-          <el-form-item prop="verificationCode">
-            <el-input icon="fa-telegram" type="text" v-model="forgetform.verificationCode" autoComplete="false"
-                      placeholder="请输入验证码" ></el-input>
-          </el-form-item>
-          <el-form-item class="verification">
-            <div id="forget_verification_code_id" style="width: 400px"></div>
-          </el-form-item>
-          <el-form-item class="forget-button">
-            <el-button style="width: 100%" type="success" :loading="resetting" @click.native.prevent="resetPassword" >确认重置</el-button>
-          </el-form-item>
-        </el-form>
-        <router-link @click="register=0" to="/login">
+          </router-link>
+        </div>
+        <div id="forget-form" v-else-if="register === 2">
+          <el-form ref="forgetform" :model="forgetform" :rules="forgetrule">
+            <el-form-item prop="mailbox">
+              <el-input icon="fa-envelope-o" type="text" v-model="forgetform.mailbox" autoComplete="false"
+                        placeholder="请输入注册邮箱" style="width:250px;float:left">
+              </el-input>
+              <el-button style="width:50px;height:36px;float:right;margin:0;padding:0" type="success" :disabled="disableSend" :loading="sending" @click.native.prevent="sendMail" >{{sendContent}}</el-button>
+            </el-form-item>
+            <el-form-item prop="password">
+              <el-input icon="fa-lock" type="text" v-model="forgetform.password" autoComplete="false"
+                        placeholder="请输入新密码" ></el-input>
+            </el-form-item>
+            <el-form-item prop="passwordAgain">
+              <el-input icon="fa-key" type="password" v-model="forgetform.passwordAgain" autoComplete="false"
+                        placeholder="请再一次输入密码" ></el-input>
+            </el-form-item>
+            <el-form-item prop="verificationCode">
+              <el-input icon="fa-telegram" type="text" v-model="forgetform.verificationCode" autoComplete="false"
+                        placeholder="请输入验证码" ></el-input>
+            </el-form-item>
+            <el-form-item class="verification">
+              <div id="forget_verification_code_id" style="width: 400px"></div>
+            </el-form-item>
+            <el-form-item class="forget-button">
+              <el-button style="width: 100%" type="success" :loading="resetting" @click.native.prevent="resetPassword" >确认重置</el-button>
+            </el-form-item>
+          </el-form>
+          <router-link @click="register=0" to="/login">
           <span  style="float: right; margin-top: -20px">
             <i class="fa fa-user-o"></i> 去登录
           </span>
-        </router-link>
-      </div>
-    </el-card>
-  </div>
+          </router-link>
+        </div>
+      </el-card>
+    </div>
     <vue-particles
       color="#dedede"
       :particleOpacity="0.7"
@@ -122,11 +122,11 @@
       :clickEffect="true"
       clickMode="push">
     </vue-particles>
-</div>
+  </div>
 </template>
 <script>
   import '../../static/js/nc'
-  import { validateLoginUsername, register , validateMailbox} from '@/api/login'
+  import { validateLoginUsername, register , validateMailbox,send,reset} from '@/api/login'
   import { Message } from 'element-ui'
   /* eslint-disable new-cap,camelcase,no-undef */
   export default {
@@ -170,7 +170,7 @@
         } else {
           validateMailbox(value).then((response) => {
             if (response.status === '200') {
-              if (response.result === false) {
+              if (response.result === true) {
                 callback(new Error('该邮箱不存在，请确认邮箱是否输入正确!'))
               }
             }
@@ -197,7 +197,7 @@
         registerform: {
           loginUsername: '',
           username: '',
-          mailbox: '',
+          email: '',
           password: '',
           passwordAgain: ''
         },
@@ -267,8 +267,8 @@
                 _this.logining = false
                 _this.$router.push({ path: '/' })
               }).catch(() => {
-                _this.logining = false
-              })
+              _this.logining = false
+            })
           }
         })
       },
@@ -285,7 +285,7 @@
         this.$refs.registerform.validate((valid) => {
           if (valid) {
             _this.registering = true
-            register(_this.registerform.loginUsername, _this.registerform.username, _this.registerform.mailbox, _this.registerform.password).then((response) => {
+            register(_this.registerform.loginUsername, _this.registerform.username, _this.registerform.email, _this.registerform.password).then((response) => {
               if (response.status === '201') {
                 Message({
                   message: '注册成功!',
@@ -315,7 +315,7 @@
       sendMail (ev) {
         let _this = this
         this.$refs.forgetform.validate((valid) => {
-          if (valid) {
+          if (!valid) {
             _this.disableSend = true
             _this.sending = true
             send(_this.forgetform.mailbox).then((response) => {
@@ -392,13 +392,6 @@
                 })
               }
               _this.registering = false
-            }).catch((e) => {
-              Message({
-                message: '重置失败，请稍后重试!',
-                type: 'error',
-                duration: 1000
-              })
-              _this.resetting = false
             })
           }
         })
@@ -498,14 +491,12 @@
   .login-title{
     text-align: center;
   }
-
   #loginContainer .login-title span{
     font-family: "Arial","Microsoft YaHei","黑体","宋体",sans-serif;
     color: dodgerblue ;
     font-size: 2em ;
     line-height: 36px;
   }
-
   #wrap-banner {
     position: relative;
     -webkit-align-items: center;
@@ -516,7 +507,6 @@
     height: 100%;
     justify-content: center;
   }
-
   #particles-js {
     background-image: url("../assets/sky.jpg");
     background-size: cover;
@@ -526,5 +516,4 @@
     width: 100%;
     height: 100%;
   }
-
 </style>

@@ -23,6 +23,12 @@ public class Account {
     private String avatarURL;
     @Column(columnDefinition = "TEXT")
     private String profile;
+    @Column()
+    private String email;
+    @Column(nullable = false)
+    private String resetCode;
+    @Column(nullable = false)
+    private Long resetOuttime;
 
     @Column
     private Long creditPoint = 0L;
@@ -45,7 +51,7 @@ public class Account {
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(joinColumns = {
-          @JoinColumn(name = "account_id",referencedColumnName = "id")
+            @JoinColumn(name = "account_id",referencedColumnName = "id")
     },inverseJoinColumns = {
             @JoinColumn(name = "question_id", referencedColumnName = "id")
     })
@@ -78,13 +84,13 @@ public class Account {
 
     @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinTable(name = "follower_followed", joinColumns = @JoinColumn(name = "followed_id"),
-    inverseJoinColumns = @JoinColumn(name = "follower_id"))
+            inverseJoinColumns = @JoinColumn(name = "follower_id"))
     @JsonIgnore
     private List <Account> followers = new ArrayList<>();
 
     @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinTable(name = "follower_followed",joinColumns = @JoinColumn(name = "follower_id"),
-    inverseJoinColumns = @JoinColumn(name = "followed_id"))
+            inverseJoinColumns = @JoinColumn(name = "followed_id"))
     @JsonIgnore
     private List<Account> followed = new ArrayList<>();
 
@@ -127,6 +133,33 @@ public class Account {
     public void setLoginUsername(String loginUsername) {
         this.loginUsername = loginUsername;
     }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+
+    public String getResetCode() {
+        return resetCode;
+    }
+
+    public void setResetCode(String resetCode) {
+        this.resetCode = resetCode;
+    }
+
+    public Long getResetOuttime() {
+        return resetOuttime;
+    }
+
+    public void setResetOuttime(Long resetOuttime) {
+        this.resetOuttime = resetOuttime;
+    }
+
+
 
     public Long getCreditPoint() {
         return creditPoint;
@@ -218,15 +251,14 @@ public class Account {
         this.followed = followed;
     }
 
-/*
-    public List<QuestionNotice> getQuestionNotices() {
-        return questionNotices;
-    }
-
-    public void setQuestionNotices(List<QuestionNotice> questionNotices) {
-        this.questionNotices = questionNotices;
-    }
-*/
+    /*
+        public List<QuestionNotice> getQuestionNotices() {
+            return questionNotices;
+        }
+        public void setQuestionNotices(List<QuestionNotice> questionNotices) {
+            this.questionNotices = questionNotices;
+        }
+    */
     @Override
     public String toString() {
         return "Account{" +

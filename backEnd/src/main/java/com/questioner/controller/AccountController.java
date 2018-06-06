@@ -2,6 +2,8 @@ package com.questioner.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Date;
+import java.sql.Timestamp;
 
 import com.questioner.entity.Account;
 import com.questioner.jwt.JwtAuthenticationRequest;
@@ -11,20 +13,35 @@ import com.questioner.service.abs.AccountService;
 import com.questioner.service.abs.AuthService;
 import com.questioner.service.abs.RecommendService;
 import com.questioner.util.AvatarUtil;
+import com.questioner.util.AuthCode;
 import com.questioner.util.ResJsonTemplate;
+
 import org.apache.mahout.cf.taste.common.TasteException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import javax.mail.internet.MimeMessage;
+import javax.mail.MessagingException;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Component;
 
 @RestController
 public class AccountController {
@@ -32,10 +49,20 @@ public class AccountController {
     AuthService authService;
     @Autowired
     AccountService accountService;
+
+    AuthCode authCode;
+
+    @Autowired
+    private JavaMailSender sender;
+
+
     @Autowired
     private RecommendService recommendService;
     @Value("${deployment.url}")
     private String deploymentURL ;
+
+    @Value("${spring.mail.username}")
+    private String from;
 
     @Value("${default.avatarUrl}")
     private String defaultAvatarUrl;
@@ -56,7 +83,7 @@ public class AccountController {
 
     @RequestMapping(value = "/auth",method = RequestMethod.POST)
     public ResJsonTemplate auth(@RequestBody JwtAuthenticationRequest authenticationRequest)
-        throws Exception
+            throws Exception
     {
         final String token = authService.login(authenticationRequest.getUsername(),
                 authenticationRequest.getPassword());
@@ -177,5 +204,45 @@ public class AccountController {
             return new ResJsonTemplate<>("500",e.getMessage());
         }
     }
+    @RequestMapping(value = "/send", method = RequestMethod.PUT)
+    public ResJsonTemplate sendEmail(@RequestParam(value = "mailbox") String email){
+        String Code=authCode.getAuthCode();
+        String title="FedBak重置密码验证码";
+        String content="您本次重置密码操作的验证码为"+Code+"。有效时间5分钟，请您尽快完成操作！";
+        SimpleMailMessage message = new SimpleMailMessage();
 
+        message.setFrom(from);
+        message.setTo(email);
+        message.setSubject(title);
+        message.setText(content);
+        sender.send(message);
+
+        Account account=accountService.getUserByEmail(email);
+        account.setResetCode(Code);
+        Timestamp outDate = new Timestamp(System.currentTimeMillis()+(long)(5*60*1000));//5分钟后过期
+        account.setResetOuttime(outDate.getTime());
+        accountService.save(account);
+        return new ResJsonTemplate<>("201", "发送成功");
+
+    }
+    @RequestMapping(value = "/reset", method = RequestMethod.PUT)
+    public ResJsonTemplate reset(@RequestParam(value = "mailbox") String email,
+                                 @RequestParam(value = "password") String password,
+                                 @RequestParam(value = "verificationCode") String code){
+        Account account=accountService.getUserByEmail(email);
+        Timestamp outDate = new Timestamp(System.currentTimeMillis());
+        Long nowTime=outDate.getTime();
+        if(account.getResetOuttime()>nowTime&&code.equals(account.getResetCode())){
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            account.setPassword(encoder.encode(password));
+            accountService.save(account);
+            return new ResJsonTemplate<>("201", "重置成功");
+        }
+        else
+            return new ResJsonTemplate<>("400", "重置失败");
+    }
+    @RequestMapping(value = "/validateMailbox", method = RequestMethod.GET)
+    public ResJsonTemplate validateEmail(@RequestParam(value = "mailbox") String mailbox) {
+        return new ResJsonTemplate<>("200", accountService.validateEmail(mailbox));
+    }
 }

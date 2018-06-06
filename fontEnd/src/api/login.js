@@ -26,7 +26,7 @@ export function validateMailbox (mailbox) {
   return fetch({
     url: '/validateMailbox',
     method: 'get',
-    data: {
+    params: {
       mailbox: mailbox
     }
   })
@@ -36,7 +36,7 @@ export function send (mailbox) {
   return fetch({
     url: '/send',
     method: 'put',
-    data: {
+    params: {
       mailbox: mailbox
     }
   })
@@ -46,7 +46,7 @@ export function reset (mailbox, password, verificationCode) {
   return fetch({
     url: '/reset',
     method: 'put',
-    data: {
+    params: {
       mailbox: mailbox,
       password: password,
       verificationCode:verificationCode
@@ -54,14 +54,14 @@ export function reset (mailbox, password, verificationCode) {
   })
 }
 
-export function register (loginUsername, username, mailbox, password) {
+export function register (loginUsername, username, email, password) {
   return fetch({
     url: '/register',
     method: 'post',
     data: {
       loginUsername: loginUsername,
       username: username,
-      mailbox: mailbox,
+      email: email,
       password: password
     }
   })
