@@ -11,6 +11,7 @@ import com.questioner.repository.QuestionTypeRepository;
 import com.questioner.service.abs.QuestionService;
 import com.questioner.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -61,7 +62,19 @@ public class QuestionServiceImpl implements QuestionService{
         Pageable pageable = new PageableBuilder().setCurrentPage(currentPage)
                 .setPageSize(pageSize).setSortParam(sortParam)
                 .setDirection(Sort.Direction.DESC).buildPage();
-        return questionRepository.getQuestionTitleLike(questionTitle,pageable);
+        Page<Question> page;
+        List<Question> questionList = new ArrayList<>();
+        if(questionTitle.contains(" ")){
+            String[] titles = questionTitle.split(" ");
+            return questionRepository.getQuestionTitleLike(titles[0], pageable);
+        }
+        else if(questionTitle.contains(",")){
+            String[] titles = questionTitle.split(",");
+            return questionRepository.getQuestionTitleLike(titles[0], pageable);
+        }
+        else {
+            return questionRepository.getQuestionTitleLike(questionTitle, pageable);
+        }
     }
 
     @Override

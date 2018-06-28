@@ -25,7 +25,7 @@ public interface QuestionRepository extends CrudRepository<Question,Long>{
     Page<Question> getHiddenQuestionTitleLike(@Param("questionTitle") String questionTitle,
                                         Pageable pageable);
 
-    @Query("select q from Question as q where q.questionTitle like %:questionTitle%")
+    @Query("select q from Question as q where q.questionTitle like %:questionTitle% or q.questionContentTxt like %:questionTitle%")
     Page<Question> getQuestionTitleLike(@Param("questionTitle") String questionTitle,
                                         Pageable pageable);
 
